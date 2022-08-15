@@ -1,0 +1,29 @@
+{
+  "name": "dc.eco",
+  "version": "0.1.0",
+  "description": "A minimal, single dependency economy system for discord bots",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wxifuwu/dc-eco.git"
+  },
+  "keywords": [
+    "discord",
+    "economy",
+    "discord.js",
+    "eris",
+    "bal"
+  ],
+  "author": "wxifuwu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wxifuwu/dc-eco/issues"
+  },
+  "homepage": "https://github.com/wxifuwu/dc-eco#readme",
+  "dependencies": {
+    "mongoose": "^6.5.2"
+  }
+}
