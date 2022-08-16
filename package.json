@@ -1,5 +1,5 @@
 {
-  "name": "dsc.eco",
+  "name": "@wxifu/discord.eco",
   "version": "0.1.0",
   "description": "A minimal, single dependency economy system for discord bots",
   "main": "index.js",
