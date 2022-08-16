@@ -1,6 +1,6 @@
 {
   "name": "@wxifu/discord.eco",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A minimal, single dependency economy system for discord bots",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/wxifuwu/dc-eco/issues"
   },
-  "homepage": "https://github.com/wxifuwu/dc-eco#readme",
+  "homepage": "https://eco.wxifu.de",
   "dependencies": {
     "mongoose": "^6.5.2"
   }
