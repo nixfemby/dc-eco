@@ -21,3 +21,6 @@ class DcEco {
         return mongoose.connect(dbUrl);
     }
 }
+
+
+module.exports = DcEco;
