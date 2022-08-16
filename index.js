@@ -13,6 +13,7 @@ class DcEco {
     /**
      * 
      * @param {string} dbUrl - MongoDB Database String
+     * @preserve
      */
     static async setMongoURL(dbUrl) {
         if(!dbUrl) throw new TypeError('A MongoDB database URL is required.');
@@ -50,7 +51,8 @@ class DcEco {
     /**
      * 
      * @param {string} userID - The users ID 
-     * @param {number} wb - Wallet Balance to add 
+     * @param {number} wb - Wallet Balance to add
+     * @preserve
      * @returns 
      */
     static async addWalletBal(userID, wb) {
@@ -82,6 +84,7 @@ class DcEco {
      * 
      * @param {string} userID - User ID to add balance to
      * @param {number} bb - Balance to add
+     * @preserve
      * @returns 
      */
     static async addBankBal(userID, bb) {
@@ -113,6 +116,7 @@ class DcEco {
      * 
      * @param {string} userID - User ID to set balance to 
      * @param {number} bb - Balance to set the user to
+     * @preserve
      * @returns 
      */
     static async setBankBal(userID, bb) {
@@ -131,7 +135,8 @@ class DcEco {
     /**
      * 
      * @param {string} userID - User ID to fetch 
-     * @returns 
+     * @returns
+     * @preserve
      */
     static async fetch(userID) {
         if(!userID) throw new TypeError("An userID was not provided but is required!");
