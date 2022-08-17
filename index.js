@@ -257,7 +257,7 @@ class DcEco {
      * @param {string} name 
      * @returns 
      */
-    static async fetchShopitem(guildID, name) {
+    static async fetchShopItem(guildID, name) {
         if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
         if(!name) throw new TypeError("The item name is required but hasn't been provided!");
 
@@ -287,6 +287,60 @@ class DcEco {
         const deleted = await shop.findOneAndDelete({ guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
 
         return deleted;
+    }
+
+    /**
+     * 
+     * @param {number} amnt 
+     * @param {number} tax 
+     * @returns 
+     */
+    static async taxCalc(amnt, tax) {
+        if(!amnt || amnt === 0 || isNaN(parseInt(amnt)) || amnt < 0) throw new TypeError("Amount wasn't provided or is invalid");
+        if(!tax || tax === 0 || isNaN(parseInt(tax)) || tax > 60 || tax < 0) throw new TypeError("Tax wasn't provided or invalid");
+
+        let taxNoPercentage = Math.floor(tax / 100);
+
+        let taxedAmount = (amnt - (Math.floor(amnt * taxNoPercentage)));
+        let taxIncome = amnt - taxedAmount
+        let returnData = { taxedTotal: taxedAmount, taxIncome: taxIncome };
+
+        return returnData;
+    }
+
+    /**
+     * 
+     * @param {number} amnt 
+     * @param {number} tax 
+     * @param {string} ownerID 
+     * @returns 
+     */
+    static async tax(amnt, tax, ownerID) {
+        if(!amnt || amnt === 0 || isNaN(parseInt(amnt)) || amnt < 0) throw new TypeError("Amount wasn't provided or is invalid");
+        if(!tax || tax === 0 || isNaN(parseInt(tax)) || tax > 60 || tax < 0) throw new TypeError("Tax wasn't provided or invalid");
+        if(!ownerID) throw new TypeError("The bot owner ID was not provided!");
+
+        let taxNoPercentage = Math.floor(tax / 100);
+
+        let taxedAmount = (amnt - (Math.floor(amnt * taxNoPercentage)));
+        let taxIncome = amnt - taxedAmount
+
+        const user = await profile.findOne({ userID: ownerID });
+
+        if (!user) {
+            const newUser = new profile({
+                userID: ownerID,
+                bank: taxIncome,
+            });
+
+            await newUser.save().catch(e => console.log("Failed to save new user with given balance!"));
+        }
+
+        user.bank += taxIncome;
+        user.lastUpdated = new Date();
+
+        await user.save().catch(e => console.log(`Failed to add bank balance! \nError: ${e}`));
+        return taxedAmount;
     }
 }
 
