@@ -5,7 +5,7 @@ let mongoUrl;
 
 if (process.version.slice(1, 3) - 0 < 16) {
     throw new Error(
-        `NodeJS Version 16 or newer is required, but you are using ${process.version}. See https://nodejs.org to update.`,
+        `NodeJS Version 16 or newer is required, but you are using ${process.version}. See https://nodejs.org to update or use your distros package manager.`,
     );
 }
 
@@ -26,6 +26,7 @@ class DcEco {
     /**
      * 
      * @param {string} userID
+     * @preserve
      * @returns User
      */
     static async createProfile(userID) {
@@ -46,6 +47,7 @@ class DcEco {
     /**
      * 
      * @param {string} userID
+     * @preserve
      * @returns 
      */
     static async deleteProfile(userID) {
@@ -149,6 +151,8 @@ class DcEco {
      * 
      * @param {string} userID
      * @param {number} wb
+     * @preserve
+     * @returns
      */
     static async setWalletBal(userID, wb) {
         if (!userID) throw new TypeError("An userID was not provided but is required");
@@ -187,6 +191,8 @@ class DcEco {
      * @param {string} type
      * @param {number} price
      * @param {*} meta
+     * @preserve
+     * @returns
      */
     static async createShopItem(guildID, name, type, price, meta) {
         if(!guildID || !name || !price || price == "0" || isNaN(parseInt(price)) || !type || !meta) throw new TypeError("A required argument has not been provided!");
@@ -225,6 +231,7 @@ class DcEco {
      * 
      * @param {string} guildID 
      * @param {string} name 
+     * @preserve
      * @returns 
      */
     static async deleteShopItem(guildID, name) {
@@ -255,6 +262,7 @@ class DcEco {
      * 
      * @param {string} guildID 
      * @param {string} name 
+     * @preserve
      * @returns 
      */
     static async fetchShopItem(guildID, name) {
@@ -279,6 +287,7 @@ class DcEco {
     /**
      * 
      * @param {string} guildID 
+     * @preserve
      * @returns 
      */
     static async deleteGuildShop(guildID) {
@@ -293,6 +302,7 @@ class DcEco {
      * 
      * @param {number} amnt 
      * @param {number} tax 
+     * @preserve
      * @returns 
      */
     static async taxCalc(amnt, tax) {
@@ -313,6 +323,7 @@ class DcEco {
      * @param {number} amnt 
      * @param {number} tax 
      * @param {string} ownerID 
+     * @preserve
      * @returns 
      */
     static async tax(amnt, tax, ownerID) {

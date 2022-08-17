@@ -2,7 +2,6 @@ type User = {
     userID: string;
     wallet: number;
     bank: number;
-    inventory: Array;
     lastUpdated: Date;
 };
 
