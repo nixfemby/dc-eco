@@ -12,6 +12,8 @@ declare module "@wxifu/discord.eco" {
         static async deleteProfile(userID: string): Promise<User>;
         static async addWalletBal(userID: string, wb: number): Promise<User>;
         static async addBankBal(userID: string, bb: number): Promise<User>;
+        static async setBankBal(userID: string, bb: number): Promise<User>;
+        static async setWalletBal(userID: string, wb: number): Promise<User>;
         static async fetch(userID: string): Promise<User>;
     }
 }

@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const profile = require('./models/profile');
 let mongoUrl;
 
-if(process.version.slice(1, 3) - 0 < 16) {
-	throw new Error(
-		`NodeJS Version 16 or newer is required, but you are using ${process.version}. See https://nodejs.org to update.`,
-	);
+if (process.version.slice(1, 3) - 0 < 16) {
+    throw new Error(
+        `NodeJS Version 16 or newer is required, but you are using ${process.version}. See https://nodejs.org to update.`,
+    );
 }
 
 class DcEco {
@@ -16,17 +16,17 @@ class DcEco {
      * @preserve
      */
     static async setMongoURL(dbUrl) {
-        if(!dbUrl) throw new TypeError('A MongoDB database URL is required.');
+        if (!dbUrl) throw new TypeError('A MongoDB database URL is required.');
 
         mongoUrl = dbUrl;
         return mongoose.connect(dbUrl);
     }
 
     static async createProfile(userID) {
-        if(!userID) throw new TypeError("An user ID was not provided!");
+        if (!userID) throw new TypeError("An user ID was not provided!");
 
         const isUser = await profile.findOne({ userID });
-        if(isUser) return false;
+        if (isUser) return false;
 
         const user = new profile({
             userID
@@ -38,10 +38,10 @@ class DcEco {
     }
 
     static async deleteProfile(userID) {
-        if(!userID) throw new TypeError("An user ID was not provided!");
+        if (!userID) throw new TypeError("An user ID was not provided!");
 
         const user = await profile.findOne({ userID });
-        if(!user) return false;
+        if (!user) return false;
 
         await profile.findOneAndDelete({ userID }).catch(e => console.log(`Failed to delete user! \nError: ${e}`));
 
@@ -56,12 +56,12 @@ class DcEco {
      * @returns 
      */
     static async addWalletBal(userID, wb) {
-        if(!userID) throw new TypeError("An userID was not provided but is required!");
-        if(wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to add to balance was not provided or invalid!");
+        if (!userID) throw new TypeError("An userID was not provided but is required!");
+        if (wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to add to balance was not provided or invalid!");
 
         const user = await profile.findOne({ userID });
 
-        if(!user) {
+        if (!user) {
             const newUser = new profile({
                 userID,
                 wallet: wb,
@@ -88,12 +88,12 @@ class DcEco {
      * @returns 
      */
     static async addBankBal(userID, bb) {
-        if(!userID) throw new TypeError("An userID was not provided but is required!");
-        if(bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to add to balance was not provided or invalid!");
+        if (!userID) throw new TypeError("An userID was not provided but is required!");
+        if (bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to add to balance was not provided or invalid!");
 
         const user = await profile.findOne({ userID });
 
-        if(!user) {
+        if (!user) {
             const newUser = new profile({
                 userID,
                 bank: bb,
@@ -120,14 +120,36 @@ class DcEco {
      * @returns 
      */
     static async setBankBal(userID, bb) {
-        if(!userID) throw new TypeError("An userID was not provided but is required!");
-        if(bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to set as balance was not provided or invalid!");
+        if (!userID) throw new TypeError("An userID was not provided but is required!");
+        if (bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to set as balance was not provided or invalid!");
 
         const user = await profile.findOne({ userID });
-        if(!user) return false;
+        if (!user) return false;
 
         user.bank = bb;
         user.lastUpdated = new Date();
+
+        await user.save().catch(e => console.log(`Failed to set bank balance! \nError: ${e}`));
+
+        return user;
+    }
+
+    /**
+     * 
+     * @param {string} userID 
+     * @param {number} wb 
+     */
+    static async setWalletBal(userID, wb) {
+        if (!userID) throw new TypeError("An userID was not provided but is required");
+        if (wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to set as balance was not provided or is invalid");
+
+        const user = await profile.findOne({ userID });
+        if (!user) return false;
+
+        user.wallet = wb;
+        user.lastUpdated = new Date();
+
+        await user.save().catch(e => console.log(`Failed to set wallet balance! \nError: ${e}`));
 
         return user;
     }
@@ -139,10 +161,10 @@ class DcEco {
      * @preserve
      */
     static async fetch(userID) {
-        if(!userID) throw new TypeError("An userID was not provided but is required!");
+        if (!userID) throw new TypeError("An userID was not provided but is required!");
 
         const user = await profile.findOne({ userID });
-        if(!user) return false;
+        if (!user) return false;
 
         return user;
     }
