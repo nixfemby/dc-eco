@@ -2,6 +2,7 @@ type User = {
     userID: string;
     wallet: number;
     bank: number;
+    inventory: Array;
     lastUpdated: Date;
 };
 
@@ -27,6 +28,6 @@ declare module "@wxifu/discord.eco" {
         static async setWalletBal(userID: string, wb: number): Promise<User>;
         static async fetch(userID: string): Promise<User>;
         static async taxCalc(amnt: number, tax: number): Promise<taxReturn>;
-        static async tax(amnt: number, tax: number, ownerID: string): number;
+        static async tax(amnt: number, tax: number, ownerID: string): Promise<number>;
     }
 }
