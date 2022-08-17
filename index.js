@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const profile = require('./models/profile');
 const shop = require('./models/guildShop');
+const guildProfile = require('./models/guildProfile');
 let mongoUrl;
 
 if (process.version.slice(1, 3) - 0 < 16) {
@@ -137,7 +138,7 @@ class DcEco {
         if (bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to set as balance was not provided or invalid!");
 
         const user = await profile.findOne({ userID });
-        if (!user) return false;
+        if (!user) throw new TypeError("User not found!");
 
         user.bank = bb;
         user.lastUpdated = new Date();
@@ -159,12 +160,56 @@ class DcEco {
         if (wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to set as balance was not provided or is invalid");
 
         const user = await profile.findOne({ userID });
-        if (!user) return false;
+        if (!user) throw new TypeError("User not found!");
 
         user.wallet = wb;
         user.lastUpdated = new Date();
 
         await user.save().catch(e => console.log(`Failed to set wallet balance! \nError: ${e}`));
+
+        return user;
+    }
+
+    /**
+     * 
+     * @param {string} userID 
+     * @param {number} wb 
+     * @preserve
+     * @returns 
+     */
+    static async subtractWalletBal(userID, wb) {
+        if (!userID) throw new TypeError("An userID was not provided but is required");
+        if (wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to subtract from balance was not provided or is invalid");
+
+        const user = await profile.findOne({ userID });
+        if (!user) throw new TypeError("User not found!");
+
+        user.wallet -= wb;
+        user.lastUpdated = new Date();
+
+        await user.save().catch(e => console.log(`Failed to subtract from wallet balance! \nError: ${e}`));
+
+        return user;
+    }
+
+    /**
+     * 
+     * @param {string} userID 
+     * @param {number} bb 
+     * @preserve
+     * @returns 
+     */
+    static async subtractBankBal(userID, bb) {
+        if (!userID) throw new TypeError("An userID was not provided but is required");
+        if (bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to subtract from balance was not provided or is invalid");
+
+        const user = await profile.findOne({ userID });
+        if (!user) throw new TypeError("User not found!");
+
+        user.bank -= bb;
+        user.lastUpdated = new Date();
+
+        await user.save().catch(e => console.log(`Failed to subtract from bank balance! \nError: ${e}`));
 
         return user;
     }
@@ -352,6 +397,99 @@ class DcEco {
 
         await user.save().catch(e => console.log(`Failed to add bank balance! \nError: ${e}`));
         return taxedAmount;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {number} bal 
+     * @preserve
+     * @returns 
+     */
+    static async addGuildBalance(guildID, bal) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!bal || bal === 0 || isNaN(parseInt(bal)) || bal < 0) throw new TypeError("The amount wasn't provided or is invalid");
+
+        const guild = await guildProfile.findOne({ guildID });
+        if(!guild) {
+            const newGuild = new guildProfile({
+                guildID,
+                bank: bal,
+            });
+
+            await newGuild.save().catch(e => console.log(`Failed to save new guild with given balance! \nError: ${e}`));
+            return newGuild;
+        }
+
+        guild.bank += bal;
+        guild.lastUpdated = new Date();
+
+        await guild.save().catch(e => console.log(`Failed to add bank balance to guild! \nError: ${e}`));
+        return guild;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {number} bal 
+     * @preserve
+     * @returns 
+     */
+    static async setGuildBalance(guildID, bal) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!bal || bal === 0 || isNaN(parseInt(bal)) || bal < 0) throw new TypeError("The amount wasn't provided or is invalid");
+
+        const guild = await guildProfile.findOne({ guildID });
+        if(!guild) {
+            const newGuild = new guildProfile({
+                guildID,
+                bank: bal,
+            });
+
+            await newGuild.save().catch(e => console.log(`Failed to save new guild with given balance! \nError: ${e}`));
+            return newGuild;
+        }
+
+        guild.bank = bal;
+        guild.lastUpdated = new Date();
+
+        await guild.save().catch(e => console.log(`Failed to set bank balance for guild! \nError: ${e}`));
+        return guild;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {number} bal 
+     * @preserve
+     * @returns 
+     */
+    static async subtractGuildBalance(guildID, bal) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!bal || bal === 0 || isNaN(parseInt(bal)) || bal < 0) throw new TypeError("The amount wasn't provided or is invalid");
+
+        const guild = await guildProfile.findOne({ guildID });
+        if(!guild) throw new TypeError("The guild doesn't exist!");
+
+        guild.bank -= bal;
+        guild.lastUpdated = new Date();
+
+        await guild.save().catch(e => console.log(`Failed to subtract bank balance from guild! \nError: ${e}`));
+        return guild;
+    }
+
+    /**
+     * 
+     * @param {string} guildID
+     * @preserve 
+     * @returns 
+     */
+    static async deleteGuildProfile(guildID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+
+        const deleted = await guildProfile.findOneAndDelete({ guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
+
+        return deleted;
     }
 }
 
