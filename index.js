@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const profile = require('./models/profile');
+const shop = require('./models/guildShop');
 let mongoUrl;
 
 if (process.version.slice(1, 3) - 0 < 16) {
@@ -12,7 +13,7 @@ class DcEco {
 
     /**
      * 
-     * @param {string} dbUrl - MongoDB Database String
+     * @param {string} dbUrl
      * @preserve
      */
     static async setMongoURL(dbUrl) {
@@ -22,6 +23,11 @@ class DcEco {
         return mongoose.connect(dbUrl);
     }
 
+    /**
+     * 
+     * @param {string} userID
+     * @returns User
+     */
     static async createProfile(userID) {
         if (!userID) throw new TypeError("An user ID was not provided!");
 
@@ -37,6 +43,11 @@ class DcEco {
         return user;
     }
 
+    /**
+     * 
+     * @param {string} userID
+     * @returns 
+     */
     static async deleteProfile(userID) {
         if (!userID) throw new TypeError("An user ID was not provided!");
 
@@ -50,8 +61,8 @@ class DcEco {
 
     /**
      * 
-     * @param {string} userID - The users ID 
-     * @param {number} wb - Wallet Balance to add
+     * @param {string} userID
+     * @param {number} wb
      * @preserve
      * @returns 
      */
@@ -82,8 +93,8 @@ class DcEco {
 
     /**
      * 
-     * @param {string} userID - User ID to add balance to
-     * @param {number} bb - Balance to add
+     * @param {string} userID
+     * @param {number} bb
      * @preserve
      * @returns 
      */
@@ -114,8 +125,8 @@ class DcEco {
 
     /**
      * 
-     * @param {string} userID - User ID to set balance to 
-     * @param {number} bb - Balance to set the user to
+     * @param {string} userID
+     * @param {number} bb
      * @preserve
      * @returns 
      */
@@ -136,8 +147,8 @@ class DcEco {
 
     /**
      * 
-     * @param {string} userID 
-     * @param {number} wb 
+     * @param {string} userID
+     * @param {number} wb
      */
     static async setWalletBal(userID, wb) {
         if (!userID) throw new TypeError("An userID was not provided but is required");
@@ -156,7 +167,7 @@ class DcEco {
 
     /**
      * 
-     * @param {string} userID - User ID to fetch 
+     * @param {string} userID
      * @returns
      * @preserve
      */
@@ -167,6 +178,113 @@ class DcEco {
         if (!user) return false;
 
         return user;
+    }
+
+    /**
+     * 
+     * @param {string} guildID
+     * @param {string} name
+     * @param {string} type
+     * @param {number} price
+     * @param {*} meta
+     */
+    static async createShopItem(guildID, name, type, price, meta) {
+        if(!guildID || !name || !price || price == "0" || isNaN(parseInt(price)) || !type || !meta) throw new TypeError("A required argument has not been provided!");
+
+        const guildEntry = await shop.findOne({ guildID });
+        const isShopItem = await shop.findOne({
+            guildID,
+            shopItems: {
+                $elemMatch: {
+                    name: name,
+                },
+            },
+        });
+
+        if(!guildEntry) {
+            const newEntry = new shop({
+                guildID,
+                shopItems: { name: name, type: type, price: price, meta: meta},
+            });
+
+            await newEntry.save().catch(e => console.log(`Failed to create new entry! \nError: ${e}`));
+
+            return newEntry;
+        }
+
+        if(guildEntry && isShopItem) return false;
+        if(guildEntry && !isShopItem) {
+            guildEntry.shopItems.push({name: name, type: type, price: price, meta: meta});
+            await guildEntry.save().catch(e => console.log(`Failed to create new entry! \nError: ${e}`));
+        }
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} name 
+     * @returns 
+     */
+    static async deleteShopItem(guildID, name) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!name) throw new TypeError("The item name is required but hasn't been provided!");
+
+        const isShopItem = await shop.findOne({
+            guildID,
+            shopItems: {
+                $elemMatch: {
+                    name: name,
+                },
+            },
+        });
+        if(!isShopItem) return false;
+
+        const filteredItems = isShopItem.shopItems.filter(item => item.name !== name);
+
+        isShopItem.shopItems = filteredItems;
+        isShopItem.lastUpdated = new Date();
+
+        await isShopItem.save().catch(e => console.log(`Failed to delete entry! \nError: ${e}`));
+
+        return isShopItem;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} name 
+     * @returns 
+     */
+    static async fetchShopitem(guildID, name) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!name) throw new TypeError("The item name is required but hasn't been provided!");
+
+        const isShopItem = await shop.findOne({
+            guildID,
+            shopItems: {
+                $elemMatch: {
+                    name: name,
+                },
+            },
+        });
+        if(!isShopItem) return false;
+
+        const filteredItems = isShopItem.shopItems.filter(item => item.name === name);
+
+        return filteredItems[0];
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @returns 
+     */
+    static async deleteGuildShop(guildID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+
+        const deleted = await shop.findOneAndDelete({ guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
+
+        return deleted;
     }
 }
 
