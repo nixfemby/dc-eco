@@ -216,6 +216,8 @@ class DcEco {
         if(guildEntry && !isShopItem) {
             guildEntry.shopItems.push({name: name, type: type, price: price, meta: meta});
             await guildEntry.save().catch(e => console.log(`Failed to create new entry! \nError: ${e}`));
+
+            return guildEntry;
         }
     }
 
