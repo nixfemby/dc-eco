@@ -29,7 +29,7 @@ type ShopItem = {
     meta: Object;
 }
 
-declare module "@wxifu/discord.eco" {
+declare module "dc.eco" {
     export default class DcEco {
         static async setMongoURL(dbUrl: string): Promise<typeof import("mongoose")>;
         static async createProfile(userID: string): Promise<User>;
@@ -50,6 +50,7 @@ declare module "@wxifu/discord.eco" {
         static async createShopItem(guildID: string, name: string, type: string, price: number, meta: Object): Promise<ShopItems>;
         static async deleteShopItem(guildID: string, name: string): Promise<ShopItems>;
         static async fetchShopItem(guildID: string, number: name): Promise<ShopItem>
+        static async fetchShopItems(guildID: string): Promise<Array>;
         static async deleteGuildShop(guildID: string): Promise<ShopItems>;
     }
 }

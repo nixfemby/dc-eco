@@ -345,6 +345,19 @@ class DcEco {
 
     /**
      * 
+     * @param {*} guildID 
+     * @returns 
+     */
+    static async fetchShopItems(guildID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+
+        const GshopItems = await shop.findOne({ guildID }).catch(e => console.log(`Fetching shop items failed! \nError: ${e}`));
+
+        return GshopItems.shopItems;
+    }
+
+    /**
+     * 
      * @param {number} amnt 
      * @param {number} tax 
      * @preserve
