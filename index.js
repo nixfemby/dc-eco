@@ -552,7 +552,7 @@ class DcEco {
         const userINV = await inventory.findOne({ userID, guildID });
         if(!userINV) return false;
 
-        const itemIndex = userINV.items.findIndex(i => i === item);
+        const itemIndex = userINV.inventory.findIndex(i => i === item);
         if(itemIndex === -1) return false;
         userINV.inventory.splice(itemIndex, 1);
         userINV.lastUpdated = new Date();
