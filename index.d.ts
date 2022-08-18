@@ -16,6 +16,12 @@ type ShopItem = {
     lastUpdated: Date;
 }
 
+type guildProfile = {
+    guildID: string;
+    bank: number;
+    lastUpdated: Date;
+}
+
 declare module "@wxifu/discord.eco" {
     export default class DcEco {
         static async setMongoURL(dbUrl: string): Promise<typeof import("mongoose")>;
@@ -25,8 +31,14 @@ declare module "@wxifu/discord.eco" {
         static async addBankBal(userID: string, bb: number): Promise<User>;
         static async setBankBal(userID: string, bb: number): Promise<User>;
         static async setWalletBal(userID: string, wb: number): Promise<User>;
+        static async subtractWalletBal(userID: string, wb: number): Promise<User>;
+        static async subtractBankBal(userID: string, bb: number): Promise<User>;
         static async fetch(userID: string): Promise<User>;
         static async taxCalc(amnt: number, tax: number): Promise<taxReturn>;
         static async tax(amnt: number, tax: number, ownerID: string): Promise<number>;
+        static async addGuildBalance(guildID: string, bal: number): Promise<guildProfile>;
+        static async setGuildBalance(guildID: string, bal: number): Promise<guildProfile>;
+        static async subtractGuildBalance(guildID: string, bal: number): Promise<guildProfile>;
+        static async deleteGuildProfile(guildID: string): Promise<guildProfile>;
     }
 }
