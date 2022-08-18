@@ -523,14 +523,14 @@ class DcEco {
             const newINV = new inventory({
                 userID,
                 guildID,
-                items: [item],
+                inventory: [item],
             });
 
             await newINV.save().catch(e => console.log(`Failed to save new inventory! \nError: ${e}`));
             return newINV;
         }
 
-        userINV.items.push(item);
+        userINV.inventory.push(item);
         userINV.lastUpdated = new Date();
 
         await userINV.save().catch(e => console.log(`Failed to add item to inventory! \nError: ${e}`));
@@ -554,7 +554,7 @@ class DcEco {
 
         const itemIndex = userINV.items.findIndex(i => i === item);
         if(itemIndex === -1) return false;
-        userINV.items.splice(itemIndex, 1);
+        userINV.inventory.splice(itemIndex, 1);
         userINV.lastUpdated = new Date();
 
         await userINV.save().catch(e => console.log(`Failed to remove item from inventory! \nError: ${e}`));
