@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const profile = require('./models/profile');
 const shop = require('./models/guildShop');
 const guildProfile = require('./models/guildProfile');
+const inventory = require('./models/inventory');
 let mongoUrl;
 
 if (process.version.slice(1, 3) - 0 < 16) {
@@ -503,6 +504,61 @@ class DcEco {
         const deleted = await guildProfile.findOneAndDelete({ guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
 
         return deleted;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} userID 
+     * @param {Object} item 
+     * @returns 
+     */
+    static async pushToInventory(guildID, userID, item) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!userID) throw new TypeError("A userID is required but has not been provided!");
+        if(!item) throw new TypeError("An item is required but has not been provided!");
+
+        const userINV = await inventory.findOne({ userID, guildID });
+        if(!userINV) {
+            const newINV = new inventory({
+                userID,
+                guildID,
+                items: [item],
+            });
+
+            await newINV.save().catch(e => console.log(`Failed to save new inventory! \nError: ${e}`));
+            return newINV;
+        }
+
+        userINV.items.push(item);
+        userINV.lastUpdated = new Date();
+
+        await userINV.save().catch(e => console.log(`Failed to add item to inventory! \nError: ${e}`));
+        return userINV;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} userID 
+     * @param {Object} item 
+     * @returns 
+     */
+    static async removeFromInventory(guildID, userID, item) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!userID) throw new TypeError("A userID is required but has not been provided!");
+        if(!item) throw new TypeError("An item is required but has not been provided!");
+
+        const userINV = await inventory.findOne({ userID, guildID });
+        if(!userINV) return false;
+
+        const itemIndex = userINV.items.findIndex(i => i === item);
+        if(itemIndex === -1) return false;
+        userINV.items.splice(itemIndex, 1);
+        userINV.lastUpdated = new Date();
+
+        await userINV.save().catch(e => console.log(`Failed to remove item from inventory! \nError: ${e}`));
+        return userINV;
     }
 }
 
