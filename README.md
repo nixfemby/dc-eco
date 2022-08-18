@@ -1,4 +1,4 @@
-# <p align=center> Discord Eco </p>
+# <p align=center> Discord Economy </p>
 <div align="center">
 <img src="https://raw.githubusercontent.com/wxifuwu/badges/mistress/built-by-lesbians.svg" />
 <img src="https://forthebadge.com/images/badges/powered-by-energy-drinks.svg" />
