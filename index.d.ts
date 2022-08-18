@@ -10,7 +10,7 @@ type taxReturn = {
     taxIncome: number;
 }
 
-type ShopItem = {
+type ShopItems = {
     guildID: string;
     shopItems: Array;
     lastUpdated: Date;
@@ -20,6 +20,13 @@ type guildProfile = {
     guildID: string;
     bank: number;
     lastUpdated: Date;
+}
+
+type ShopItem = {
+    name: string;
+    type: string;
+    price: number;
+    meta: Object;
 }
 
 declare module "@wxifu/discord.eco" {
@@ -40,5 +47,9 @@ declare module "@wxifu/discord.eco" {
         static async setGuildBalance(guildID: string, bal: number): Promise<guildProfile>;
         static async subtractGuildBalance(guildID: string, bal: number): Promise<guildProfile>;
         static async deleteGuildProfile(guildID: string): Promise<guildProfile>;
+        static async createShopItem(guildID: string, name: string, type: string, price: number, meta: Object): Promise<ShopItems>;
+        static async deleteShopItem(guildID: string, name: string): Promise<ShopItems>;
+        static async fetchShopItem(guildID: string, number: name): Promise<ShopItem>
+        static async deleteGuildShop(guildID: string): Promise<ShopItems>;
     }
 }
