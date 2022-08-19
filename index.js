@@ -517,6 +517,7 @@ class DcEco {
         if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
         if(!userID) throw new TypeError("A userID is required but has not been provided!");
         if(!item) throw new TypeError("An item is required but has not been provided!");
+        if(!item.name) throw new TypeError("Item must have a name.");
 
         const userINV = await inventory.findOne({ userID, guildID });
         if(!userINV) {
@@ -552,7 +553,7 @@ class DcEco {
         const userINV = await inventory.findOne({ userID, guildID });
         if(!userINV) return false;
 
-        const itemIndex = userINV.inventory.findIndex(i => i === item);
+        const itemIndex = userINV.inventory.findIndex(i => i.name === item.name);
         if(itemIndex === -1) return false;
         userINV.inventory.splice(itemIndex, 1);
         userINV.lastUpdated = new Date();
