@@ -355,6 +355,7 @@ class DcEco {
 
         const GshopItems = await shop.findOne({ guildID }).catch(e => console.log(`Fetching shop items failed! \nError: ${e}`));
 
+        if(GshopItems.shopItems.length <= 0) return false;
         return GshopItems.shopItems;
     }
 
