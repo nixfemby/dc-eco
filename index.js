@@ -347,6 +347,7 @@ class DcEco {
     /**
      * 
      * @param {*} guildID 
+     * @preserve
      * @returns 
      */
     static async fetchShopItems(guildID) {
@@ -494,6 +495,20 @@ class DcEco {
 
     /**
      * 
+     * @param {string} guildID 
+     * @returns 
+     */
+    static async fetchGuildProfile(guildID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+
+        const guild = await guildProfile.findOne({ guildID });
+        if(!guild) return false;
+
+        return guild;
+    }
+
+    /**
+     * 
      * @param {string} guildID
      * @preserve 
      * @returns 
@@ -511,6 +526,7 @@ class DcEco {
      * @param {string} guildID 
      * @param {string} userID 
      * @param {Object} item 
+     * @preserve
      * @returns 
      */
     static async pushToInventory(guildID, userID, item) {
@@ -543,12 +559,14 @@ class DcEco {
      * @param {string} guildID 
      * @param {string} userID 
      * @param {Object} item 
+     * @preserve
      * @returns 
      */
     static async removeFromInventory(guildID, userID, item) {
         if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
         if(!userID) throw new TypeError("A userID is required but has not been provided!");
         if(!item) throw new TypeError("An item is required but has not been provided!");
+        if(!item.name) throw new TypeError("Item must have a name.");
 
         const userINV = await inventory.findOne({ userID, guildID });
         if(!userINV) return false;
@@ -559,6 +577,46 @@ class DcEco {
         userINV.lastUpdated = new Date();
 
         await userINV.save().catch(e => console.log(`Failed to remove item from inventory! \nError: ${e}`));
+        return userINV;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} userID 
+     * @param {Object} item 
+     * @preserve
+     * @returns 
+     */
+    static async fetchFromInventory(guildID, userID, item) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!userID) throw new TypeError("A userID is required but has not been provided!");
+        if(!item) throw new TypeError("An item is required but has not been provided!");
+        if(!item.name) throw new TypeError("Item must have a name.");
+
+        const userINV = await inventory.findOne({ userID, guildID });
+        if(!userINV) return false;
+
+        const itemIndex = userINV.inventory.findIndex(i => i.name === item.name);
+        if(itemIndex === -1) return false;
+
+        return userINV.inventory[itemIndex];
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} userID 
+     * @preserve
+     * @returns 
+     */
+    static async fetchInventory(guildID, userID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!userID) throw new TypeError("A userID is required but has not been provided!");
+
+        const userINV = await inventory.findOne({ userID, guildID });
+        if(!userINV) return false;
+
         return userINV;
     }
 }
