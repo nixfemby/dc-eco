@@ -139,7 +139,7 @@ class DcEco {
         if (bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to set as balance was not provided or invalid!");
 
         const user = await profile.findOne({ userID });
-        if (!user) throw new TypeError("User not found!");
+        if (!user) return false;
 
         user.bank = bb;
         user.lastUpdated = new Date();
@@ -161,7 +161,7 @@ class DcEco {
         if (wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to set as balance was not provided or is invalid");
 
         const user = await profile.findOne({ userID });
-        if (!user) throw new TypeError("User not found!");
+        if (!user) return false;
 
         user.wallet = wb;
         user.lastUpdated = new Date();
@@ -183,7 +183,7 @@ class DcEco {
         if (wb === 0 || !wb || isNaN(parseInt(wb))) throw new TypeError("Amount to subtract from balance was not provided or is invalid");
 
         const user = await profile.findOne({ userID });
-        if (!user) throw new TypeError("User not found!");
+        if (!user) return false;
 
         user.wallet -= wb;
         user.lastUpdated = new Date();
@@ -205,7 +205,7 @@ class DcEco {
         if (bb === 0 || !bb || isNaN(parseInt(bb))) throw new TypeError("Amount to subtract from balance was not provided or is invalid");
 
         const user = await profile.findOne({ userID });
-        if (!user) throw new TypeError("User not found!");
+        if (!user) return false;
 
         user.bank -= bb;
         user.lastUpdated = new Date();
@@ -339,6 +339,9 @@ class DcEco {
     static async deleteGuildShop(guildID) {
         if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
 
+        const isShop = await shop.findOne({ guildID });
+        if(!isShop) return false;
+
         const deleted = await shop.findOneAndDelete({ guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
 
         return deleted;
@@ -413,6 +416,26 @@ class DcEco {
 
         await user.save().catch(e => console.log(`Failed to add bank balance! \nError: ${e}`));
         return taxedAmount;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @returns 
+     */
+    static async createGuildProfile(guildID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+
+        const isGuild = await guildProfile.findOne({ guildID });
+        if(isGuild) return false;
+
+        const newGuild = new guildProfile({
+            guildID
+        });
+
+        await newGuild.save().catch(e => console.log("Failed to save new guild profile!"));
+
+        return newGuild;
     }
 
     /**
@@ -517,9 +540,35 @@ class DcEco {
     static async deleteGuildProfile(guildID) {
         if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
 
+        const isGuild = await guildProfile.findOne({ guildID });
+        if(!isGuild) return false;
+
         const deleted = await guildProfile.findOneAndDelete({ guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
 
         return deleted;
+    }
+
+    /**
+     * 
+     * @param {string} guildID 
+     * @param {string} userID 
+     * @returns 
+     */
+    static async createInventory(guildID, userID) {
+        if(!guildID) throw new TypeError("A guildID is required but hasn't been provided!");
+        if(!userID) throw new TypeError("A userID is required but has not been provided!");
+
+        const isInv = await inventory.findOne({ guildID, userID });
+        if(isInv) return false;
+
+        const newInv = new inventory({
+            userID,
+            guildID,
+        })
+
+        await newInv.save().catch(e => console.log(`Failed to save user inventory! \nError: ${e}`));
+
+        return newInv;
     }
 
     /**
@@ -619,6 +668,18 @@ class DcEco {
         if(!userINV) return false;
 
         return userINV;
+    }
+
+    static async deleteInventory(guildID, userID) {
+        if(!guildID) throw new TypeError("A guildID is required but has not been provided!");
+        if(!userID) throw new TypeError("A userID is required but has not been provided!");
+
+        const isInv = await inventory.findOne({ userID, guildID });
+        if(!isInv) return false;
+
+        const deleted = await inventory.findOneAndDelete({ userID, guildID }).catch(e => console.log(`Deleting entry failed! \nError: ${e}`));
+
+        return deleted
     }
 }
 
